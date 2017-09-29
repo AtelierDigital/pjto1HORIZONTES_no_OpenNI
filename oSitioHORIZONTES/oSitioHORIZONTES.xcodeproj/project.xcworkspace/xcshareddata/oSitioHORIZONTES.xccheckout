@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C924AEE4-E2DC-4414-BF89-CCF4D847E296</string>
+	<key>IDESourceControlProjectName</key>
+	<string>project</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>561DBA788C32F8435EA4D86F023E01CF00D9146B</key>
+		<string>https://github.com/AtelierDigital/pjto1HORIZONTES.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>oSitioHORIZONTES/oSitioHORIZONTES.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>561DBA788C32F8435EA4D86F023E01CF00D9146B</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/AtelierDigital/pjto1HORIZONTES.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>561DBA788C32F8435EA4D86F023E01CF00D9146B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>561DBA788C32F8435EA4D86F023E01CF00D9146B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>pjto1HORIZONTES</string>
+		</dict>
+	</array>
+</dict>
+</plist>
