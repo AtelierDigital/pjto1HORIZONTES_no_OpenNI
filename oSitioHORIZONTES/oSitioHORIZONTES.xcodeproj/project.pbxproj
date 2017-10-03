@@ -82,6 +82,7 @@
 		F10955B91F7ACF8F0052AB35 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F10955AD1F7ACF8F0052AB35 /* ofxCvHaarFinder.cpp */; settings = {ASSET_TAGS = (); }; };
 		F10955BA1F7ACF8F0052AB35 /* ofxCvImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F10955AF1F7ACF8F0052AB35 /* ofxCvImage.cpp */; settings = {ASSET_TAGS = (); }; };
 		F10955BB1F7ACF8F0052AB35 /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F10955B11F7ACF8F0052AB35 /* ofxCvShortImage.cpp */; settings = {ASSET_TAGS = (); }; };
+		F12F80051F83D6D700FEA68D /* Boid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F12F80031F83D6D700FEA68D /* Boid.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -455,6 +456,8 @@
 		F10955B11F7ACF8F0052AB35 /* ofxCvShortImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCvShortImage.cpp; sourceTree = "<group>"; };
 		F10955B21F7ACF8F0052AB35 /* ofxCvShortImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCvShortImage.h; sourceTree = "<group>"; };
 		F10955B31F7ACF8F0052AB35 /* ofxOpenCv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOpenCv.h; sourceTree = "<group>"; };
+		F12F80031F83D6D700FEA68D /* Boid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Boid.cpp; sourceTree = "<group>"; };
+		F12F80041F83D6D700FEA68D /* Boid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Boid.h; sourceTree = "<group>"; };
 		F4F5B6B8BA2BD52C646ED908 /* OscException.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscException.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscException.h; sourceTree = SOURCE_ROOT; };
 		F740139603D171038C4E1057 /* guiType2DSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = guiType2DSlider.cpp; path = ../../../addons/ofxControlPanel/src/guiType2DSlider.cpp; sourceTree = SOURCE_ROOT; };
 		F7FBC56859535E597B24BB91 /* NetworkingUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = NetworkingUtils.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/NetworkingUtils.h; sourceTree = SOURCE_ROOT; };
@@ -720,6 +723,8 @@
 				B09698F7E943450D7473B271 /* kaoxControlPanel.h */,
 				1A1A4C05895D575771571B30 /* metaBlob.cpp */,
 				A03728BC530ECAD155F71D18 /* metaBlob.h */,
+				F12F80031F83D6D700FEA68D /* Boid.cpp */,
+				F12F80041F83D6D700FEA68D /* Boid.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1521,6 +1526,7 @@
 				F10953D81F7AB4AF0052AB35 /* flags.c in Sources */,
 				F10953C11F7AB4620052AB35 /* ofxKinect.cpp in Sources */,
 				8A230FB96662FB1AB1611B8A /* simpleColor.cpp in Sources */,
+				F12F80051F83D6D700FEA68D /* Boid.cpp in Sources */,
 				9FEF7AFAD4DDFFD2A55AA54A /* simpleFileLister.cpp in Sources */,
 				D41B30CF66DA734F99A45D5E /* simpleLogger.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,

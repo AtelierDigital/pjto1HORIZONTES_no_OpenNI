@@ -12,6 +12,8 @@
 
 #include "metaBlob.h"
 
+#include "Boid.h"
+
 
 #define HOST "localhost"
 #define PORT 5552
@@ -125,8 +127,11 @@ public:
     
     ofPixels metaPixels;
     
-    //
-    //  [Brizo] Inspired by ofxKinect's KinectExample
+    //  Agentes
+    vector<Boid> boids;
+    
+    
+    //  ofxKinect
     
     ofxCvGrayscaleImage grayImage; // grayscale depth image
     ofxCvGrayscaleImage grayThreshNear; // the near thresholded image

@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "Boid.h"
 
 //#__________________________________#//
 //#                                  #//
@@ -60,14 +61,23 @@ void ofApp::setup() {
     
     
     for (int i=0; i<numBlobs; i++) {
-        
-        
         Blob bi = *new Blob(ofRandom(w), ofRandom(h), ofRandom(-100, 100), ofRandom(-100, 100), 1 + ofRandom(15));
         
         b.push_back(bi);
     }
     
     metaPixels.allocate(1920, 1080, 4);
+    
+    //
+    //  Agentes
+    
+    for(int i =0; i < 6; i++)
+    {
+        ofVec2f leftStop(ofGetWidth()/10, ofGetHeight()/10);
+        ofVec2f rightStop(9*ofGetWidth()/10, ofGetHeight()/10);
+        Boid boid(ofGetWidth()/2, ofGetHeight()/2, leftStop, rightStop, 0.6 * ofGetHeight());
+        boids.push_back(boid);
+    }
     
 }
 
@@ -377,7 +387,7 @@ void ofApp::keyPressed(int key){
     
     
     
-    cout << "frame rate:" << ofGetFrameRate() << "   mouseX:" << ofGetMouseX() << endl;
+    cout << "frame rate:" << ofGetFrameRate() << "   mouseX:" << ofGetMouseX() << "   mouseY:" << ofGetMouseY() << endl;
 
 }
 //--------------------------------------------------------------
@@ -559,26 +569,18 @@ void ofApp::updateShaders(){
     //ofDrawRectangle(0,0,ofGetWidth(), ofGetHeight());
     
     
-    for(int i = 10; i > 0; i--){
-        
-        float factor = i;
-        
-        ofPushStyle();
-        
-        ofSetColor(255, (int)25);
-        
-//        ofDrawEllipse(b[0].getx(),b[0].gety(), 200-factor,200-factor);
-//        ofDrawEllipse(b[1].getx(),b[1].gety(), 200-factor,200-factor);
-        
-        ofDrawEllipse(ofGetMouseX(),ofGetMouseY(), ofRandom(200),ofRandom(200));
-        
-//        ofDrawEllipse(sp[0].x,b[0].y, 200-factor,200-factor);
-//        ofDrawEllipse(sp[0].x,b[0].y, 200-factor,200-factor);
-        
-        ofPopStyle();
-        
-        
+    //  Agentes
+    
+    ofPushStyle();
+    ofSetColor(255, (int)25);
+    for(int i=0; i<boids.size(); i++)
+    {
+        boids[i].run(boids);  // passing the entire list of boids to each boid
+        for(int e = 0; e < 10; e++){
+            ofDrawEllipse(boids[i].pos.x, boids[i].pos.y, ofRandom(100),ofRandom(100));
+        }
     }
+    ofPopStyle();
     
     
    // maskFbo.readToPixels(metaPixels);
