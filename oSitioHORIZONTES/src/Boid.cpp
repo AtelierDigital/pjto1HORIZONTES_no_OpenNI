@@ -9,10 +9,10 @@
 #include "Boid.h"
 #include "ofMain.h" // apenas para ofGetMouseX e Y...
 
-Boid::Boid(float x, float y, ofVec2f& p_leftStop, ofVec2f& p_rightStop, float p_yThreshold) {
-    acc = ofVec2f::ofVec2f(0,0);
-    vel = ofVec2f::ofVec2f(ofRandom(-1,1),ofRandom(-1,1));
-    pos = ofVec2f::ofVec2f(x,y);
+Boid::Boid(float x, float y, ofPoint& p_leftStop, ofPoint& p_rightStop, float p_yThreshold) {
+    acc = ofVec3f::ofVec3f(0,0);
+    vel = ofVec3f::ofVec3f(ofRandom(-1,1),ofRandom(-1,1));
+    pos = ofVec3f::ofVec3f(x,y);
     r = 2.0;
     
     //  [ADi]
@@ -20,12 +20,15 @@ Boid::Boid(float x, float y, ofVec2f& p_leftStop, ofVec2f& p_rightStop, float p_
     rEnterFlee_sq = 120*120;
     rExitFlee_sq  = 500*500;
     yThreshold = p_yThreshold;//0.6*height;
-    leftStop  = ofVec2f::ofVec2f(p_leftStop.x, p_leftStop.y);//width/10.0, height/10.0);
-    rightStop = ofVec2f::ofVec2f(p_rightStop.x, p_rightStop.y);//9.0*width/10.0, height/10.0);
+    leftStop  = ofVec3f::ofVec3f(p_leftStop.x, p_leftStop.y);//width/10.0, height/10.0);
+    rightStop = ofVec3f::ofVec3f(p_rightStop.x, p_rightStop.y);//9.0*width/10.0, height/10.0);
 
 }
 
-void Boid::run(vector<Boid>& boids) {
+void Boid::run(vector<Boid>& boids, float a_targetX, float a_targetY)
+{
+    target.x = a_targetX;
+    target.y = a_targetY;
     //flock(boids);
     quero_quero();  //  ADi
     update();
@@ -33,7 +36,7 @@ void Boid::run(vector<Boid>& boids) {
     //render();
 }
     
-void Boid::applyForce(ofVec2f& force) {
+void Boid::applyForce(ofPoint& force) {
     // We could add mass here if we want A = F / M
     acc += force;
 }
@@ -57,18 +60,16 @@ void Boid::flock(vector<Boid>& boids) {
 //  [ADi]
 void Boid::quero_quero()
 {
-    target.x = ofGetMouseX();
-    target.y = ofGetMouseY();
     
     float sqrDist = (pos.x-target.x)*(pos.x-target.x) + (pos.y-target.y)*(pos.y-target.y);
     //  Inside enter flee area
     if( sqrDist < rEnterFlee_sq )
     {
         state = stateFlee;
-        cout << "flee"<< endl;
+        //cout << "flee"<< endl;
         //applyForce( new PVector(0.0,-10.0*maxforce).mult(chaseWt) );
         calcSeek(target,this->seek);
-        cout << this->seek << endl;
+        //cout << this->seek << endl;
         this->seek *= -chaseWt;
     }
     /*else if(sqrDist < rEnterFlee_sq) ?
@@ -80,11 +81,11 @@ void Boid::quero_quero()
         if(vel.x < 0)  {
             float sqrDist2 = (pos.x-leftStop.x)*(pos.x-leftStop.x) + (pos.y-leftStop.y)*(pos.y-leftStop.y);
             calcSeek(leftStop,this->seek);
-            cout << this->seek << endl;
+            //cout << this->seek << endl;
             this->seek *= chaseWt;
             if(sqrDist2 < 40*40) {
                 state = stateChase;
-                cout << "chase" << endl;
+                //cout << "chase" << endl;
             }
         }
         else {
@@ -92,32 +93,32 @@ void Boid::quero_quero()
             
             float sqrDist2 = (pos.x-rightStop.x)*(pos.x-rightStop.x) + (pos.y-rightStop.y)*(pos.y-rightStop.y);
             calcSeek(rightStop,this->seek);
-            cout << this->seek << endl;
+            //cout << this->seek << endl;
             this->seek *= chaseWt;
             if(sqrDist2 < 40*40) {
                 state = stateChase;
-                cout << "chase"<< endl;
+                //cout << "chase"<< endl;
             }
         }
     }
     else
     {  //  ... or return to seek target
         state = stateChase;
-        cout << "chase..."<< endl;
+        //cout << "chase..."<< endl;
         calcSeek(target,this->seek);
-        cout << this->seek << endl;
+        //cout << this->seek << endl;
         this->seek *= chaseWt;
-        cout << this->seek << endl;
+        //cout << this->seek << endl;
     }
     
-    cout << this->seek << endl;
+    //cout << this->seek << endl;
     
     applyForce( this->seek );
     
     //  Always avoids ground
     if(pos.y > yThreshold) {
         state = stateFlee;
-        ofVec2f vUp(0.0, -0.1);
+        ofPoint vUp(0.0, -0.1);
         vUp *= (this->pos.y-yThreshold);
         applyForce( vUp );
     }
@@ -136,9 +137,9 @@ void Boid::update() {
     
     // A method that calculates and applies a steering force towards a target
     // STEER = DESIRED MINUS VELOCITY
-void Boid::calcSeek(ofVec2f& target, ofVec2f& out_steer)
+void Boid::calcSeek(ofPoint& target, ofPoint& out_steer)
 {
-    ofVec2f desired = target - this->pos;  // A vector pointing from the position to the target
+    ofPoint desired = target - this->pos;  // A vector pointing from the position to the target
     
     // Normalize desired and scale to maximum speed
     desired.normalize();
@@ -187,7 +188,7 @@ void Boid::calcSeparate (vector<Boid>& boids)
         // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
         if ((d > 0) && (d < desiredseparation)) {
             // Calculate vector pointing away from neighbor
-            ofVec2f diff = this->pos - other.pos;
+            ofPoint diff = this->pos - other.pos;
             diff.normalize();
             diff /= d;        // Weight by distance
             this->separate += diff;
@@ -249,5 +250,10 @@ void Boid::calcCohesion (vector<Boid>& boids) {
         //return seek(sum);  // Steer towards the position
     }
     //return sum;
+}
+
+ofPoint Boid::getTarget()
+{
+    return this->target;
 }
 

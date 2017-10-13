@@ -137,7 +137,12 @@ public:
     ofxCvGrayscaleImage grayThreshNear; // the near thresholded image
     ofxCvGrayscaleImage grayThreshFar; // the far thresholded image
     
+    //  OpenCV
+    
     ofxCvContourFinder contourFinder;
+    
+    ofPoint centroid;
+    ofRectangle rectCoverage;
 };
 
 #endif

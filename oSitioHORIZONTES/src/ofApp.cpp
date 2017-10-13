@@ -71,10 +71,10 @@ void ofApp::setup() {
     //
     //  Agentes
     
+    ofPoint leftStop(ofGetWidth()/10, ofGetHeight()/10);
+    ofPoint rightStop(9*ofGetWidth()/10, ofGetHeight()/10);
     for(int i =0; i < 6; i++)
     {
-        ofVec2f leftStop(ofGetWidth()/10, ofGetHeight()/10);
-        ofVec2f rightStop(9*ofGetWidth()/10, ofGetHeight()/10);
         Boid boid(ofGetWidth()/2, ofGetHeight()/2, leftStop, rightStop, 0.6 * ofGetHeight());
         boids.push_back(boid);
     }
@@ -100,7 +100,7 @@ void ofApp::setupControlPanel() {
     panel.addMultiToggle("KinectSource", 0, variadic("live")("recent")("calib")("swap")("menuDir")("menuInf")("misc"));    
     
     panel.addSlider("NearThreshold", 500, 100, 3000);
-    panel.addSlider("FarThreshold", 1000, 200, 6000);
+    panel.addSlider("FarThreshold", 6000, 200, 8000);
     panel.addSlider("FilterFactor", .1, -2, 2);
 
     panel.addToggle("TrackingHands", true);
@@ -167,14 +167,17 @@ void ofApp::update(){
     }
     
     //
-    //  [Brizo] Armazenando a depth image, a espelhando e descartando tudo que esta fora de near e far
+    //  [Brizo]
+    //  * Armazenando a depth image, a espelhando e descartando tudo que esta fora de near e far
+    //  * Determinando qtd de pixels da mask da depth image; retangulo de cobertura; mais centroide
+    //  * Atualizando agentes
     
     kinect.setDepthClipping((float)getf("NearThreshold"), (float)getf("FarThreshold"));
     
-//    ofLogNotice() << "NearThreshold: " << kinect.getNearClipping();
-//    ofLogNotice() << "FarThreshold: "  << kinect.getFarClipping();
-    
     kinect.update();
+    
+    this->centroid = ofVec3f::ofVec3f(-1.0f, -1.0f);
+    this->rectCoverage.set(-1.0f, -1.0f, -1.0f, -1.0f);
     
     // there is a new frame and we are connected
     if(kinect.isFrameNew()) {
@@ -182,6 +185,10 @@ void ofApp::update(){
         // Lendo e espelhando a depth image do kinect
         grayImage.setFromPixels(kinect.getDepthPixels());
         grayImage.mirror(false, true);
+        
+        grayImage.getCvImage();
+        
+        //ofLogNotice() << "count = " << grayImage.countNonZeroInRegion(0, 0, kinect.width, kinect.height);
         
         /*
         // we do two thresholds - one for the far plane and one for the near plane
@@ -200,14 +207,14 @@ void ofApp::update(){
             ofPixels & pix = grayImage.getPixels();
             int numPixels = pix.size();
             for(int i = 0; i < numPixels; i++) {
-                //if(pix[i] > kinect.getNearClipping() || pix[i] < (kinect.getFarClipping())) {
-                if(pix[i] > 230 || pix[i] < 70) {    //  hard-coding so para testes, usando o kinect bem perto de mim
+                if(pix[i] > kinect.getFarClipping() || pix[i] < (kinect.getNearClipping())) {
+                //if(pix[i] > 230 || pix[i] < 70) {    //  hard-coding so para testes, usando o kinect bem perto de mim
                     pix[i] = 0;
                 }
             }
         //}
         
-        //  Comentado - Nao estamos mais editando a grayImage...
+        //  Comentado - Nao estamos mais editando os pixels da grayImage individualmente...
         //grayImage.flagImageChanged(); // updateTexture(); ?
         
         
@@ -218,7 +225,30 @@ void ofApp::update(){
         
         // find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        //contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 20, false);
+        float nblobs = (float)contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 10, false);
+        
+        if(nblobs > 0) {
+            rectCoverage = contourFinder.blobs[0].boundingRect;
+            centroid     = contourFinder.blobs[0].centroid;
+        }
+        for(int i=1; i < nblobs; i++)
+        {
+            centroid += contourFinder.blobs[i].centroid;
+            rectCoverage.growToInclude( contourFinder.blobs[i].boundingRect );
+        }
+        centroid /= nblobs;
+        
+        //
+        //  migrating from the scale of the kinect depth image dimensions to our app screen dimensions
+        
+        centroid.x = ofMap(centroid.x, 0, kinect.width, 0, ofGetWidth());
+        centroid.y = ofMap(centroid.y, 0, kinect.height, 0, ofGetHeight());
+        rectCoverage.x = ofMap(rectCoverage.x, 0, kinect.width, 0, ofGetWidth());
+        rectCoverage.y = ofMap(rectCoverage.y, 0, kinect.height, 0, ofGetHeight());
+        rectCoverage.width  = ofMap(rectCoverage.width, 0, kinect.width, 0, ofGetWidth());
+        rectCoverage.height = ofMap(rectCoverage.height, 0, kinect.height, 0, ofGetHeight());
+        
+        //ofLogNotice() << "centroid = " << centroid << ", rectCoverage = " << rectCoverage;
     }
     
     //
@@ -245,6 +275,12 @@ void ofApp::update(){
 	
 	counter = counter + 0.033f;
     
+    //centroid.x = ofGetMouseX();   //  test
+    //centroid.y = ofGetMouseY();   //  test
+    for(int i=0; i<boids.size(); i++)
+    {
+        boids[i].run(boids, centroid.x, rectCoverage.y);  // passing the entire list of boids to each boid
+    }
 
     //updateBlobs
     for (int i=0; i<numBlobs-1; ++i) {
@@ -299,6 +335,14 @@ void ofApp::draw(){
 	
 	ofDisableAlphaBlending();
 
+    
+    
+    ofPushMatrix(); //  debug
+    ofSetColor(255); //  debug
+    ofDrawRectangle(centroid.x, rectCoverage.y, 20, 20); //  debug
+    ofPopMatrix(); //  debug
+    
+    
     
     if(isSyphonOn) mainOutputSyphonServer.publishScreen();
 	
@@ -392,7 +436,8 @@ void ofApp::keyPressed(int key){
 }
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    cout << "Near = " << kinect.getNearClipping() << std::endl;
+    cout << "Far = " << kinect.getFarClipping() << std::endl;
 }
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
@@ -408,6 +453,7 @@ void ofApp::mousePressed(int x, int y, int button){
 }
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
+    ofLogNotice() << "target = " << boids[0].getTarget() << "frame rate:" << ofGetFrameRate();
 
 }
 //--------------------------------------------------------------
@@ -575,7 +621,6 @@ void ofApp::updateShaders(){
     ofSetColor(255, (int)25);
     for(int i=0; i<boids.size(); i++)
     {
-        boids[i].run(boids);  // passing the entire list of boids to each boid
         for(int e = 0; e < 10; e++){
             ofDrawEllipse(boids[i].pos.x, boids[i].pos.y, ofRandom(100),ofRandom(100));
         }

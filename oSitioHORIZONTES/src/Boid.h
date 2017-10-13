@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#include "ofVec2f.h"
+#include "ofPoint.h"
 #include "ofMath.h"
 
 ///  Baseado em
@@ -30,7 +30,7 @@ protected:
     
     float r;
     
-    ofVec2f separate, align, cohere, seek;
+    ofPoint separate, align, cohere, seek;
     
     float swt = 100;//25.0;     //sep.mult(25.0f);
     float awt = 4.0;      //ali.mult(4.0f);
@@ -43,17 +43,17 @@ protected:
     static const int stateChase = 0;
     static const int stateFlee  = 1;
     int state;
-    ofVec2f target;
+    ofPoint target;
     float yThreshold;
     
     //  Alem do flock(), temos um comportamento quero_quero()
     
     float chaseWt = 10;//100.0;  //  chases a target
     //float avoidFloorWt = 30.f;  //  avoids floor
-    ofVec2f rightStop, leftStop;
+    ofPoint rightStop, leftStop;
     
 
-    void applyForce(ofVec2f& force);
+    void applyForce(ofPoint& force);
     
     // We accumulate a new acceleration each time based on three rules
     void flock(vector<Boid>& boids);
@@ -66,7 +66,7 @@ protected:
     void update();
     // A method that calculates and applies a steering force towards a target
     // STEER = DESIRED MINUS VELOCITY
-    void calcSeek(ofVec2f& target, ofVec2f& out_steer);
+    void calcSeek(ofPoint& target, ofPoint& out_steer);
     
     void render();
     
@@ -84,12 +84,14 @@ protected:
     
 public:
     
-    ofVec2f pos;
-    ofVec2f vel;
-    ofVec2f acc;
+    ofPoint pos;
+    ofPoint vel;
+    ofPoint acc;
     
-    Boid(float x, float y, ofVec2f& p_leftStop, ofVec2f& p_rightStop, float p_yThreshold);
-    void run(vector<Boid>& boids);
+    Boid(float x, float y, ofPoint& p_leftStop, ofPoint& p_rightStop, float p_yThreshold);
+    void run(vector<Boid>& boids, float a_targetX, float a_targetY);
+    
+    ofPoint getTarget();
     
     
 };
